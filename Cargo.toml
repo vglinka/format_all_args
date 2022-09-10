@@ -1,0 +1,12 @@
+[package]
+name = "format_all_args"
+version = "0.1.0"
+edition = "2021"
+authors = ["Vadim Glinka <vadgit@yandex.com>"]
+description = "Formats any number of arguments without heap allocation."
+keywords = ["format_all_args", "format_args", "format"]
+categories = ["development-tools"]
+repository = "https://github.com/vglinka/format_all_args"
+readme = "README.md"
+license = "Apache-2.0 OR MIT"
+exclude = ["/target"]
