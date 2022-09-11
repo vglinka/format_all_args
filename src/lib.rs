@@ -40,8 +40,11 @@ format_all_args {
         format_args!("{}{}{}{}{}{}{}{}{}{}", $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $a9, $a10)
     };
     // Any number of arguments.
+    ( $arg:tt                $(,)? ) => { format_args!("{}"  , $arg                              ) };  
     ( $arg:tt, $($args:tt),* $(,)? ) => { format_args!("{}{}", $arg, format_all_args!($($args),*)) };
-    ( $arg:tt                      ) => { format_args!("{}"  , $arg                              ) };   
+    // No arguments.
+    (                              ) => { ""                                                       };
+     
 }
 
 #[macro_export] macro_rules!
@@ -62,6 +65,10 @@ mod tests {
         };
     }
     
+    macro_rules! optional_arg_test { ( $($a:expr)? ) => { optional_arg!($($a)?) }; }
+    //                                 ----------^                      -----^
+    //                                 optional                         optional
+    
     check!(a1; 1);
     check!(a2; 1,2);
     check!(a3; 1,2,3);
@@ -74,8 +81,20 @@ mod tests {
     check!(a10; 1,2,3,4,5,6,7,8,9,10);
     check!(long_list; 1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0);
 
+
+    #[test]
+    fn no_args() {
+        let result = format!("{}", format_all_args!( ));
+        //                                          ^
+        assert_eq!(result, "");
+    }
+    
     #[test]
     fn no_colon() {
+        let result = format!("{}", format_all_args!(1 ));
+        //                                           ^
+        assert_eq!(result, "1");
+        
         let result = format!("{}", format_all_args!(1,2,3,4,5 ));
         //                                                   ^
         assert_eq!(result, "12345");
@@ -83,10 +102,18 @@ mod tests {
         let result = format!("{}", format_all_args!(1,2,3,4,5,6,7,8,9,0,1,2 ));
         //                                                                 ^
         assert_eq!(result, "123456789012");
+        
+        let result = format!("{}", format_all_args!((optional_arg_test!(6)) ));
+        //                                                                 ^
+        assert_eq!(result, "6");
     }
     
     #[test]
     fn colon() {
+        let result = format!("{}", format_all_args!(1,));
+        //                                           ^
+        assert_eq!(result, "1");
+    
         let result = format!("{}", format_all_args!(1,2,3,4,5,));
         //                                                   ^
         assert_eq!(result, "12345");
@@ -94,13 +121,14 @@ mod tests {
         let result = format!("{}", format_all_args!(1,2,3,4,5,6,7,8,9,0,1,2,));
         //                                                                 ^
         assert_eq!(result, "123456789012");
+        
+        let result = format!("{}", format_all_args!((optional_arg_test!(6)),));
+        //                                                                 ^
+        assert_eq!(result, "6");
     }
-    
-    macro_rules! optional_arg_test { ( $($a:expr)? ) => { optional_arg!($($a)?) }; }
-    //                                           ^                           ^
-    
+        
     #[test]
-    fn optional_arg_test() {        
+    fn optional_arg_test() {             
         let result = format!("{}", format_all_args!(1,2,3,4,5,(optional_arg_test!(6)),7));
         //                                                                        ^
         assert_eq!(result, "1234567");
