@@ -5,7 +5,7 @@ Formats any number of arguments without heap allocation.
 Additionally, the library provides macro `optional_arg` which may be
 required when programming macros with optional arguments.
 
-When `optional_arg` is used as an argument to `format_all_args`,
+When macro is used as an argument to `format_all_args`,
 additional parentheses must be used.
 
 **main.rs**
