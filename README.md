@@ -5,9 +5,6 @@ Formats any number of arguments without heap allocation.
 Additionally, the library provides macro `optional_arg` which may be
 required when programming macros with optional arguments.
 
-When macro is used as an argument to `format_all_args`,
-additional parentheses must be used.
-
 **main.rs**
 
 ```rust
@@ -18,11 +15,7 @@ fn main() {
     //                                 ----------^                      -----^
     //                                 optional                         optional
     //
-    let result = format!("{}", format_all_args!(1,2,3,4,5,(optional_arg_test!( )),7));
-    //                                                    ^                   ^ ^
-    //                                                    |                     |
-    //                                                    +---------------------+
-    //                                                    additional parentheses
+    let result = format!("{}", format_all_args!(1,2,3,4,5,optional_arg_test!( ),7));
     assert_eq!(result, "123457");
 }
 ```
