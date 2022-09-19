@@ -11,6 +11,12 @@
 
 #[macro_export] macro_rules!
 format_all_args {
+    // 0 args
+    () => { "" };
+    // 1 arg
+    ( $arg:expr $(,)? ) => {
+        format_args!("{}", $arg)
+    };
     // Optimization. The number of arguments is less than or equal to 10.
     ( $a1:expr, $a2:expr $(,)? ) => {
         format_args!("{}{}", $a1, $a2)
@@ -39,12 +45,12 @@ format_all_args {
     ( $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr, $a9:expr, $a10:expr $(,)? ) => {
         format_args!("{}{}{}{}{}{}{}{}{}{}", $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $a9, $a10)
     };
-    // Any number of arguments.
-    ( $arg:expr                $(,)? ) => { format_args!("{}"  , $arg                              ) };  
-    ( $arg:expr, $($args:expr),* $(,)? ) => { format_args!("{}{}", $arg, format_all_args!($($args),*)) };
-    // No arguments.
-    (                              ) => { ""                                                       };
-     
+    // Any number of arguments > 10.
+    // At each level of recursion, we subtract 10 arguments from
+    // the total number of arguments.
+    ( $arg_1:expr, $arg_2:expr, $arg_3:expr, $arg_4:expr, $arg_5:expr, $arg_6:expr, $arg_7:expr, $arg_8:expr, $arg_9:expr, $arg_10:expr, $($args:expr),* $(,)? ) => {        
+        format_args!("{}{}{}{}{}{}{}{}{}{}{}", $arg_1, $arg_2, $arg_3, $arg_4, $arg_5, $arg_6, $arg_7, $arg_8, $arg_9, $arg_10, format_all_args!($($args),*))
+    };
 }
 
 #[macro_export] macro_rules!
